@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/18 14:04:24 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/18 19:30:21 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/24 15:54:32 by cicekyuzbas   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 # include <stdlib.h>
 # include <string.h>
 # include <errno.h>
-# include <stdlib.h>
 # include <sys/wait.h>
 # include <fcntl.h>
+# include "libft/libft.h"
 
 typedef struct t_data
 {
@@ -34,9 +34,18 @@ typedef struct t_data
 	int		fd_infile;
 	int		fd_outfile;
 
-	char	**path1;
-	char	**path2;
 	char	**envp;
 }			t_data;
+
+int		main(int argc, char **argv, char **envp);
+void	pipex(t_data *data);
+void	child_process(t_data *data);
+void	parent_process(t_data *data);
+void	ft_error(void);
+
+
+void	execute(char *argv, char **envp);
+char	*find_path(char *cmd, char **envp);
+
 
 #endif

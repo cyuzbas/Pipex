@@ -6,65 +6,64 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 15:50:52 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/18 19:42:25 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/24 16:50:09 by cicekyuzbas   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-// void	ft_error(char *str)
-// {
-// 	ft_putendl_fd (str, 1);
-// 	exit(EXIT_FAILURE);
-// }
+void	ft_error(void)
+{
+	perror("");
+	exit(EXIT_FAILURE);
+}
 
 void	child_process(t_data *data)
 {
 	data->fd_infile = open(data->infile, O_RDONLY);
 	if (data->fd_infile == -1)
 	{
-		perror("Error opening input file");
+		perror(data->infile);
 		close(data->fd[1]);
 		exit(EXIT_FAILURE);
 	}
 	dup2(data->fd_infile, STDIN_FILENO);
 	dup2(data->fd[1], STDOUT_FILENO);
 	close(data->fd[0]);
-//	close(data->fd[1])
+	close(data->fd[1]);
 	close(data->fd_infile);
-//execve function for each possible path
-
+	execute(data->cmd1, data->envp);
+	perror("Error with execve");
 	exit(EXIT_FAILURE);
 }
 
 void	parent_process(t_data *data)
 {
-	int	count;
-
-	waitpid(data->pid, NULL, 0);
+	waitpid(data->pid, NULL, 0);	
 	data->fd_outfile = open(data->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	if (data->fd_outfile == -1)
 	{
-		perror("Error opening output file");
+		perror(data->outfile);
 		close(data->fd[0]);
 		exit(EXIT_FAILURE);
 	}
 	dup2(data->fd_outfile, STDOUT_FILENO);
 	dup2(data->fd[0], STDIN_FILENO);
 	close(data->fd[1]);
-//	close(data->fd[0]);
+	close(data->fd[0]);
 	close(data->fd_outfile);
-// execve function for each possible path
+	execute(data->cmd2, data->envp);
+	perror("Error with execve");
 	exit(EXIT_FAILURE);
 }
 
 void	pipex(t_data *data)
 {
 	if (pipe(data->fd) == -1)
-		return (perror("Pipe Error"));
+		ft_error();
 	data->pid = fork();
 	if (data->pid == -1)
-		return (perror("Fork Error"));
+		ft_error();
 	if (data->pid == 0)
 		child_process(data);
 	else
@@ -74,12 +73,11 @@ void	pipex(t_data *data)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-	int		fd[2];
 
 	if (argc != 5)
 	{
 		printf("Usage: ./pipex file1 cmd1 cmd2 file2");
-		exit(EXIT_FAILURE);
+		exit(EXIT_SUCCESS);
 	}
 	data.infile = argv[1];
 	data.cmd1 = argv[2];
