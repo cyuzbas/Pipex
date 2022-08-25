@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   utils.c                                            :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/08/25 12:48:40 by cyuzbas       #+#    #+#                 */
+/*   Updated: 2022/08/25 18:31:20 by cyuzbas       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 void	ft_free(char **paths)
@@ -13,17 +25,12 @@ void	ft_free(char **paths)
 	free(paths);
 }
 
-char	*find_path(char *cmd, char **envp)
+char	*join_path(char **paths, char *cmd)
 {
-	char	**paths;
 	char	*full_path;
 	char	*tmp_path;
 	int		i;
 
-	i = 0;
-	while (ft_strncmp(envp[i], "PATH=", 5) != 0)
-		i++;
-	paths = ft_split(envp[i] + 5, ':');
 	i = 0;
 	while (paths[i])
 	{
@@ -36,6 +43,34 @@ char	*find_path(char *cmd, char **envp)
 		i++;
 	}
 	ft_free(paths);
+	return (NULL);
+}
+
+char	*find_path(char *cmd, char **envp)
+{
+	char	**paths;
+	char	*full_path;
+	int		i;
+	char	*path;
+
+	i = 0;
+	path = NULL;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+		{
+			path = envp[i];
+			break ;
+		}
+			i++;
+	}
+	if (!path)
+		return (0);
+	paths = ft_split(path + 5, ':');
+	full_path = join_path(paths, cmd);
+	if (full_path)
+		return (full_path);
+	free(full_path);
 	return (0);
 }
 
@@ -43,21 +78,25 @@ void	execute(char *argv, char **envp)
 {
 	char	**cmd;
 	char	*path;
-	int 	i;
-	
+	int		i;
+
 	i = 0;
 	cmd = ft_split(argv, ' ');
-	path = find_path(cmd[0], envp);
-	if (!path)	
+	if (cmd[0] == NULL)
 	{
-		while (cmd[i])
-		{
-			free(cmd[i]);
-			i++;
-		}
-		free(cmd);
-		ft_error();
+		execve("", cmd, envp);
+		return ;
 	}
-	execve(path, cmd, envp);
-	ft_error();
+	else if (ft_strchr(cmd[0], '/') != 0)
+	{
+		execve(cmd[0], cmd, envp);
+		return ;
+	}
+	else if (envp[0])
+	{
+		path = find_path(cmd[0], envp);
+		if (!path)
+			ft_free(cmd);
+		execve(path, cmd, envp);
+	}
 }

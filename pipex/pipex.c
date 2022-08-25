@@ -6,15 +6,15 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 15:50:52 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/24 16:50:09 by cicekyuzbas   ########   odam.nl         */
+/*   Updated: 2022/08/25 17:15:05 by cyuzbas       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	ft_error(void)
+void	ft_error(char *str)
 {
-	perror("");
+	ft_putendl_fd(str, 2);
 	exit(EXIT_FAILURE);
 }
 
@@ -33,13 +33,14 @@ void	child_process(t_data *data)
 	close(data->fd[1]);
 	close(data->fd_infile);
 	execute(data->cmd1, data->envp);
-	perror("Error with execve");
-	exit(EXIT_FAILURE);
+	ft_putstr_fd(data->cmd1, 2);
+	ft_putendl_fd(": command not found", 2);
+	exit(127);
 }
 
 void	parent_process(t_data *data)
 {
-	waitpid(data->pid, NULL, 0);	
+	waitpid(data->pid, NULL, 0);
 	data->fd_outfile = open(data->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	if (data->fd_outfile == -1)
 	{
@@ -53,17 +54,18 @@ void	parent_process(t_data *data)
 	close(data->fd[0]);
 	close(data->fd_outfile);
 	execute(data->cmd2, data->envp);
-	perror("Error with execve");
-	exit(EXIT_FAILURE);
+	ft_putstr_fd(data->cmd2, 2);
+	ft_putendl_fd(": command not found", 2);
+	exit(127);
 }
 
 void	pipex(t_data *data)
 {
 	if (pipe(data->fd) == -1)
-		ft_error();
+		ft_error("Error with pipe");
 	data->pid = fork();
 	if (data->pid == -1)
-		ft_error();
+		ft_error("Error with fork");
 	if (data->pid == 0)
 		child_process(data);
 	else

@@ -1,19 +1,23 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         ::::::::             #
+#    Makefile                                           :+:    :+:             #
+#                                                      +:+                     #
+#    By: cyuzbas <cyuzbas@student.codam.nl>           +#+                      #
+#                                                    +#+                       #
+#    Created: 2022/08/25 12:51:44 by cyuzbas       #+#    #+#                  #
+#    Updated: 2022/08/25 18:30:13 by cyuzbas       ########   odam.nl          #
+#                                                                              #
+# **************************************************************************** #
+
 NAME	=	pipex
 
 CC		=	gcc
 
-CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	=	-Wall -Wextra -Werror -g -fsanitize=address
 
-# DFLAGS	=	-g -fsanitize=address
-
-
-# ifdef WITH_BONUS
-# SRCS	=	pipex_bonus.c \
-# 			utils_bonus.c
-# else
 SRCS	=	pipex.c \
 			utils.c
-# endif
 
 HEADER	=	pipex.h
 

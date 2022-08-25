@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/18 14:04:24 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/24 15:54:32 by cicekyuzbas   ########   odam.nl         */
+/*   Updated: 2022/08/25 18:31:07 by cyuzbas       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ int		main(int argc, char **argv, char **envp);
 void	pipex(t_data *data);
 void	child_process(t_data *data);
 void	parent_process(t_data *data);
-void	ft_error(void);
+void	ft_error(char *str);
 
-
-void	execute(char *argv, char **envp);
+void	ft_free(char **paths);
+char	*join_path(char **paths, char *cmd);
 char	*find_path(char *cmd, char **envp);
-
+void	execute(char *argv, char **envp);
 
 #endif
