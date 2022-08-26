@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/18 14:04:24 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/25 18:31:07 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/26 16:07:31 by cyuzbas       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@
 typedef struct t_data
 {
 	int		fd[2];
-	int		pid;
+	int		child_1;
+	int		child_2;
 
 	char	*infile;
 	char	*outfile;

@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 15:50:52 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/25 17:15:05 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/26 17:32:20 by cyuzbas       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	ft_error(char *str)
 
 void	child_process(t_data *data)
 {
+
+	// printf("[child_process] this is pid: %d with parent_id: %d\n", getpid(), getppid());
 	data->fd_infile = open(data->infile, O_RDONLY);
 	if (data->fd_infile == -1)
 	{
@@ -27,8 +29,12 @@ void	child_process(t_data *data)
 		close(data->fd[1]);
 		exit(EXIT_FAILURE);
 	}
-	dup2(data->fd_infile, STDIN_FILENO);
-	dup2(data->fd[1], STDOUT_FILENO);
+	if (dup2(data->fd_infile, STDIN_FILENO) < 0)
+		perror("");
+	// system("lsof -c pipex");
+	if (dup2(data->fd[1], STDOUT_FILENO) < 0)
+		perror("");
+		
 	close(data->fd[0]);
 	close(data->fd[1]);
 	close(data->fd_infile);
@@ -38,9 +44,9 @@ void	child_process(t_data *data)
 	exit(127);
 }
 
-void	parent_process(t_data *data)
+void	second_child_process(t_data *data)
 {
-	waitpid(data->pid, NULL, 0);
+
 	data->fd_outfile = open(data->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	if (data->fd_outfile == -1)
 	{
@@ -48,7 +54,9 @@ void	parent_process(t_data *data)
 		close(data->fd[0]);
 		exit(EXIT_FAILURE);
 	}
-	dup2(data->fd_outfile, STDOUT_FILENO);
+	if (dup2(data->fd_outfile, STDOUT_FILENO) < 0)
+		perror("");
+	// printf("[second_child_process] this is pid: %d with parent_id: %d\n", getpid(), getppid());
 	dup2(data->fd[0], STDIN_FILENO);
 	close(data->fd[1]);
 	close(data->fd[0]);
@@ -59,17 +67,48 @@ void	parent_process(t_data *data)
 	exit(127);
 }
 
+void	parent_process(t_data *data)
+{
+	close(data->fd[0]);
+	close(data->fd[1]);
+	waitpid(data->child_1, NULL, 0);
+	waitpid(data->child_2, NULL, 0);
+	// close(data->fd[1]);
+	// data->fd_outfile = open(data->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+	// if (data->fd_outfile == -1)
+	// {
+	// 	perror(data->outfile);
+	// 	close(data->fd[0]);
+	// 	exit(EXIT_FAILURE);
+	// }
+	// dup2(data->fd_outfile, STDOUT_FILENO);
+	// dup2(data->fd[0], STDIN_FILENO);
+	// close(data->fd[0]);
+	// close(data->fd_outfile);
+	// execute(data->cmd2, data->envp);
+	// ft_putstr_fd(data->cmd2, 2);
+	// ft_putendl_fd(": command not found", 2);
+	// exit(127);
+	// wait(NULL);
+}
+
 void	pipex(t_data *data)
 {
 	if (pipe(data->fd) == -1)
 		ft_error("Error with pipe");
-	data->pid = fork();
-	if (data->pid == -1)
+	data->child_1 = fork();
+	if (data->child_1 == -1)
 		ft_error("Error with fork");
-	if (data->pid == 0)
+	if (data->child_1 == 0)
 		child_process(data);
+	data->child_2 = fork();
+	if (data->child_2 == -1)
+		ft_error("Error with fork");
+	if (data->child_2 == 0)
+		second_child_process(data);
 	else
 		parent_process(data);
+
 }
 
 int	main(int argc, char **argv, char **envp)
