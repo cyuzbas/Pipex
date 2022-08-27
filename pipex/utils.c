@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/25 12:48:40 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/25 18:31:20 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/27 20:48:55 by cicekyuzbas   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,9 @@ void	execute(char *argv, char **envp)
 	else if (ft_strchr(cmd[0], '/') != 0)
 	{
 		execve(cmd[0], cmd, envp);
-		return ;
+		ft_putstr_fd(argv, 2);
+		ft_putendl_fd(": No such file or directory", 2);
+		exit (127);
 	}
 	else if (envp[0])
 	{

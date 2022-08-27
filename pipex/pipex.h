@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/18 14:04:24 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/26 16:07:31 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/27 20:49:00 by cicekyuzbas   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 

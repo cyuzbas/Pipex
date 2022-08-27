@@ -6,7 +6,7 @@
 /*   By: cyuzbas <cyuzbas@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 15:50:52 by cyuzbas       #+#    #+#                 */
-/*   Updated: 2022/08/26 17:32:20 by cyuzbas       ########   odam.nl         */
+/*   Updated: 2022/08/27 20:26:03 by cicekyuzbas   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ void	ft_error(char *str)
 
 void	child_process(t_data *data)
 {
-
-	// printf("[child_process] this is pid: %d with parent_id: %d\n", getpid(), getppid());
 	data->fd_infile = open(data->infile, O_RDONLY);
 	if (data->fd_infile == -1)
 	{
@@ -29,12 +27,8 @@ void	child_process(t_data *data)
 		close(data->fd[1]);
 		exit(EXIT_FAILURE);
 	}
-	if (dup2(data->fd_infile, STDIN_FILENO) < 0)
-		perror("");
-	// system("lsof -c pipex");
-	if (dup2(data->fd[1], STDOUT_FILENO) < 0)
-		perror("");
-		
+	dup2(data->fd_infile, STDIN_FILENO);
+	dup2(data->fd[1], STDOUT_FILENO);
 	close(data->fd[0]);
 	close(data->fd[1]);
 	close(data->fd_infile);
@@ -54,9 +48,7 @@ void	second_child_process(t_data *data)
 		close(data->fd[0]);
 		exit(EXIT_FAILURE);
 	}
-	if (dup2(data->fd_outfile, STDOUT_FILENO) < 0)
-		perror("");
-	// printf("[second_child_process] this is pid: %d with parent_id: %d\n", getpid(), getppid());
+	dup2(data->fd_outfile, STDOUT_FILENO);
 	dup2(data->fd[0], STDIN_FILENO);
 	close(data->fd[1]);
 	close(data->fd[0]);
@@ -69,27 +61,14 @@ void	second_child_process(t_data *data)
 
 void	parent_process(t_data *data)
 {
+	int	status;
+
 	close(data->fd[0]);
 	close(data->fd[1]);
 	waitpid(data->child_1, NULL, 0);
-	waitpid(data->child_2, NULL, 0);
-	// close(data->fd[1]);
-	// data->fd_outfile = open(data->outfile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
-	// if (data->fd_outfile == -1)
-	// {
-	// 	perror(data->outfile);
-	// 	close(data->fd[0]);
-	// 	exit(EXIT_FAILURE);
-	// }
-	// dup2(data->fd_outfile, STDOUT_FILENO);
-	// dup2(data->fd[0], STDIN_FILENO);
-	// close(data->fd[0]);
-	// close(data->fd_outfile);
-	// execute(data->cmd2, data->envp);
-	// ft_putstr_fd(data->cmd2, 2);
-	// ft_putendl_fd(": command not found", 2);
-	// exit(127);
-	// wait(NULL);
+	waitpid(data->child_2, &status, 0);
+	if(status != 0)
+		exit(127);
 }
 
 void	pipex(t_data *data)
