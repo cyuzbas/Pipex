@@ -96,7 +96,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc != 5)
 	{
-		printf("Usage: ./pipex file1 cmd1 cmd2 file2");
+		ft_putendl_fd("Usage: ./pipex file1 cmd1 cmd2 file2", 1);
 		exit(EXIT_SUCCESS);
 	}
 	data.infile = argv[1];
